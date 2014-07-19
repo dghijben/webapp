@@ -117,7 +117,11 @@ module.exports = function (grunt) {
                     src: [
                         '.tmp',
                         '<%= config.dist %>/*',
-                        '!<%= config.dist %>/.git*'
+                        '!<%= config.dist %>/.git*',
+                        '!<%= config.dist %>/Procfile',
+                        '!<%= config.dist %>/package.json',
+                        '!<%= config.dist %>/web.js',
+                        '!<%= config.dist %>/node_modules'
                     ]
                 }]
             },
@@ -341,7 +345,7 @@ module.exports = function (grunt) {
         // reference in your app
         modernizr: {
             dist: {
-                devFile: 'bower_components/modernizr/modernizr.js',
+                devFile: 'app/bower_components/modernizr/modernizr.js',
                 outputFile: '<%= config.dist %>/scripts/vendor/modernizr.js',
                 files: {
                     src: [
@@ -369,6 +373,20 @@ module.exports = function (grunt) {
                 'imagemin',
                 'svgmin'
             ]
+        },
+        buildcontrol: {
+            options: {
+                dir: 'dist',
+                commit: true,
+                push: true,
+                message: 'Built %sourceName% from commit %sourceCommit% on branch %sourceBranch%'
+            },
+            heroku: {
+                options: {
+                    remote: 'git@heroku.com:himawari.git',
+                    branch: 'master'
+                }
+            }
         }
     });
 
@@ -413,7 +431,7 @@ module.exports = function (grunt) {
         'concurrent:dist',
         'autoprefixer',
         'concat',
-        'cssmin',
+        //'cssmin',
         'uglify',
         'copy:dist',
         'modernizr',
@@ -426,5 +444,8 @@ module.exports = function (grunt) {
         'newer:jshint',
         'test',
         'build'
+    ]);
+    grunt.registerTask('deploy', [
+        'buildcontrol'
     ]);
 };
